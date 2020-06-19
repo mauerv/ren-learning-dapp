@@ -17,7 +17,26 @@ interface IGatewayRegistry {
 contract Basic {
 	IGatewayRegistry public registry;
 
+	event Deposit(uint256 _amount, bytes _msg);
+	event Withdrawal(bytes _to, uint256 _amount, bytes _msg);
+
 	constructor(IGatewayRegistry _registry) public {
 		registry = _registry;
+	}
+
+	function deposit(
+		bytes calldata _msg,
+		uint256 _amount,
+		bytes32 _nHash,
+		bytes calldata _sig
+	) external {
+		bytes32 pHash = keccak256(abi.encode(_msg));
+		uint256 mintedAmount = registry.getGatewayBySymbol("BTC").mint(pHash, _amount, _nHash, _sig);
+		emit Deposit(mintedAmount, _msg);
+	}
+
+	function withdraw(bytes calldata _msg, bytes calldata _to, uint256 _amount) external {
+		uint256 burnedAmount = registry.getGatewayBySymbol("BTC").burn(_to, _amount);
+		emit Withdrawal(_to, burnedAmount, _msg);
 	}
 }
