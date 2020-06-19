@@ -39,4 +39,8 @@ contract Basic {
 		uint256 burnedAmount = registry.getGatewayBySymbol("BTC").burn(_to, _amount);
 		emit Withdrawal(_to, burnedAmount, _msg);
 	}
+
+	function balance() public view returns (uint256) {
+		return registry.getTokenBySymbol("BTC").balanceOf(address(this));
+	}
 }
